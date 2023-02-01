@@ -1,28 +1,64 @@
-<script setup>
-import { onMounted } from '@vue/runtime-core';
-import useBlogs from '../composables/blogApi';
-
-const { logout, getUser ,user  } = useBlogs()
-onMounted( () => getUser())
-
-</script>
-
 <template>
 <div id="backend-view">
-    <div class="logout"><a @click="logout" >Log out</a></div>
+    <div class="logout"><a href="#" @click="logout">Log out</a></div>
     <h1 class="heading">Dashboard</h1>
-    <span>Hi {{ user.name }}</span>
+    <span>Hi {{ name }}!</span>
     <div class="links">
         <ul>
-            <li><a href="">Create Post</a></li>
+            <li><RouterLink :to="{ name: 'CreatePosts' }">Create Post</RouterLink></li>
 
-            <li><a href="">Create Category</a></li>
+            <li>
+                <router-link :to="{ name: 'CreateCategories' }">Create Category</router-link>
+            </li>
 
-            <li><a href="">Categories List</a></li>
+            <li><RouterLink :to="{ name: 'CategoriesList', params: {
+                            theMessage: 'nothing'
+                        } }">Categories List</RouterLink></li>
         </ul>
     </div>
 </div>
 </template>
+
+<script>
+import { RouterLink } from 'vue-router';
+
+export default {
+    data() {
+        return {
+            name: "",
+        };
+    },
+    mounted() {
+        axios
+            .get("/api/user")
+            .then((response) => (this.name = response.data.name))
+            .catch((error) => {
+            if (error.response.status === 401) {
+                this.$emit("updateSidebar");
+                localStorage.removeItem("authenticated");
+                this.$router.push({
+                    name: "Login"
+                });
+            }
+        });
+    },
+    methods: {
+        logout() {
+            axios
+                .post("/api/logout")
+                .then((response) => {
+                this.$router.push({
+                    name: "Home"
+                });
+                localStorage.removeItem("authenticated");
+                this.$emit("updateSidebar");
+            })
+                .catch((error) => console.log(error));
+        },
+    },
+    components: { RouterLink }
+};
+</script>
 
 <style scoped>
 /* dashboard */
@@ -37,7 +73,6 @@ onMounted( () => getUser())
     position: absolute;
     top: 30px;
     right: 40px;
-    cursor: pointer;
 }
 
 .heading {

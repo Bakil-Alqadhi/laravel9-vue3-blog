@@ -39,7 +39,7 @@
         <main class="container">
         <!-- render components depending on the page visited -->
 
-        <router-view @update-sidebar="updateSideBar"></router-view>
+        <router-view @updateSidebar="update_sidebar"></router-view>
         </main>
 
         <!-- Main footer -->
@@ -69,11 +69,18 @@ export default {
         hideOverlay(){
             this.overlayVisibility = false
         },
-        updateSideBar(){
+        update_sidebar(){
             this.loggedIn = !this.loggedIn
         }
-
-    }
+    },
+    mounted() {
+            if(localStorage.getItem('authenticated')){
+                this.loggedIn = true
+            } else {
+                this.loggedIn = false
+                this.$emit('updateSideBar')
+            }
+        }
 }
 </script>
 

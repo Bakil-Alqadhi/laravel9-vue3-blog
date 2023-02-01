@@ -1,28 +1,13 @@
-<script setup>
-import useBlogs from '../composables/blogApi'
-import { ref } from 'vue';
-
-const { login, errors } = useBlogs()
-const fields = ref({
-    email: '',
-    password: ''
-})
-    // if(isLoggedInd){
-    //     defineEmits( 'updateSidebar')
-    // }
-</script>
-
 <template>
     <div id="backend-view">
-      <form @submit.prevent="login(fields)">
+      <form @submit.prevent="submit">
         <h3>Login Here</h3>
         <label for="email">Email</label>
-        <input type="text" id="email" v-model="fields.email"/>
+        <input type="text" id="email" v-model="fields.email" />
         <span v-if="errors.email" class="error">{{ errors.email[0] }}</span>
 
-
         <label for="password">Password</label>
-        <input type="password" id="password" v-model="fields.password"/>
+        <input type="password" id="password" v-model="fields.password" />
         <span v-if="errors.password" class="error">{{ errors.password[0] }}</span>
 
         <button type="submit">Log In</button>
@@ -31,11 +16,35 @@ const fields = ref({
     </div>
   </template>
 
+  <script>
+  export default {
+    data() {
+      return {
+        fields: {},
+        errors: {},
+      };
+    },
+    methods: {
+      submit() {
+        axios
+          .post("/api/login", this.fields)
+          .then(() => {
+            this.$router.push({ name: "Dashboard" });
+            localStorage.setItem("authenticated", "true");
+            this.$emit("updateSidebar");
+          })
+          .catch((error) => {
+            this.errors = error.response.data.errors;
+          });
+      },
+    },
+  };
+  </script>
+
   <style scoped>
   #backend-view {
     height: 100vh;
-    /* background-color: #f3f4f6; */
-    background-color: #131313;
+    background-color: #f3f4f6;
     display: grid;
     align-items: center;
   }
@@ -51,6 +60,7 @@ const fields = ref({
     letter-spacing: 0.5px;
     outline: none;
   }
+
   label {
     display: block;
     margin-top: 20px;
@@ -67,6 +77,7 @@ const fields = ref({
     font-size: 16px;
     font-weight: 300;
   }
+
   button {
     margin-top: 50px;
     width: 100%;

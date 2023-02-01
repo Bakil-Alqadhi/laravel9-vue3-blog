@@ -1,58 +1,97 @@
 import { createRouter, createWebHistory } from "vue-router";
-import SingleBlog from '../pages/SingleBlog.vue'
+import SingleBlog from "../pages/SingleBlog.vue";
 
-const router = createRouter( {
-    history:createWebHistory(import.meta.env.BASE_URL),
+const router = createRouter({
+    history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-            path: '/',
-            name: 'name',
-            component: () => import('../pages/Home.vue')
+            path: "/",
+            name: "name",
+            component: () => import("../pages/Home.vue"),
         },
         {
-            path: '/home',
-            name: 'Home',
-            component: () => import('../pages/Home.vue')
+            path: "/home",
+            name: "Home",
+            component: () => import("../pages/Home.vue"),
         },
         {
-            path: '/about',
-            name: 'About',
-            component: () => import('../pages/About.vue')
+            path: "/about",
+            name: "About",
+            component: () => import("../pages/About.vue"),
         },
         {
-            path: '/blog',
-            name: 'Blog',
-            component: () => import('../pages/Blog.vue')
+            path: "/blog",
+            name: "Blog",
+            component: () => import("../pages/Blog.vue"),
         },
         {
-            path: '/blog/:slug',
-            name: 'SingleBlog',
+            path: "/blog/:slug",
+            name: "SingleBlog",
             component: SingleBlog,
-            props: true
+            props: true,
         },
         {
-            path: '/contact',
-            name: 'Contact',
-            component: () => import('../pages/Contact.vue')
+            path: "/contact",
+            name: "Contact",
+            component: () => import("../pages/Contact.vue"),
         },
         {
-            path: '/login',
-            name: 'Login',
-            component: () => import('../pages/Login.vue')
+            path: "/login",
+            name: "Login",
+            component: () => import("../pages/Login.vue"),
+            meta: { requiresGuest: true },
         },
         {
-            path: '/register',
-            name: 'Register',
-            component: () => import('../pages/Register.vue')
+            path: "/register",
+            name: "Register",
+            component: () => import("../pages/Register.vue"),
+            meta: { requiresGuest: true },
         },
         {
-            path: '/dashboard',
-            name: 'Dashboard',
-            component: () => import('../pages/Dashboard.vue')
-        }
+            path: "/dashboard",
+            name: "Dashboard",
+            component: () => import("../pages/Dashboard.vue"),
+            meta: { requiresAuth: true },
+        },
+        {
+            path: "/categories/create",
+            name: "CreateCategories",
+            component: () => import("../pages/categories/CreateCategories.vue"),
+            meta: { requiresAuth: true },
+        },
+        {
+            path: "/categories/:theMessage",
+            name: "CategoriesList",
+            component: () => import("../pages/categories/CategoriesList.vue"),
+            meta: { requiresAuth: true },
+            props: true,
+        },
+        {
+            path: "/categories/:id/edit",
+            name: "EditCategories",
+            component: () => import("../pages/categories/EditCategories.vue"),
+            meta: { requiresAuth: true },
+            props: true,
+        },
+        {
+            path: "/posts/create",
+            name: "CreatePosts",
+            component: () => import("../pages/posts/CreatePosts.vue"),
+            meta: { requiresAuth: true },
+        },
+    ],
+});
 
-    ]
-
-})
-
-export default router
+router.beforeEach((to, from) => {
+    const authenticated = localStorage.getItem("authenticated");
+    if (to.meta.requiresGuest && authenticated) {
+        return {
+            name: "Dashboard",
+        };
+    } else if (to.meta.requiresAuth && !authenticated) {
+        return {
+            name: "Login",
+        };
+    }
+});
+export default router;
