@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\RelatedPostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
@@ -30,9 +33,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('categories/{category}', [CategoryController::class, 'show']);
     Route::put('categories/{category}', [CategoryController::class, 'update']);
     Route::delete('categories/{category}', [CategoryController::class, 'destroy']);
+    Route::post('posts', [PostController::class, 'store']);
 
 });
+//categories
 Route::get('categories', [CategoryController::class, 'index']);
+//posts
+Route::get('home-posts', [HomeController::class, 'index']);
+Route::get('posts/{post:slug}', [PostController::class, 'show']);
+Route::get('related-posts/{post:slug}', [RelatedPostController::class, 'index']);
+Route::get('posts', [PostController::class, 'index']);
 
 //------------public routes==========================
 Route::post('register', [RegisteredUserController::class, 'store']);

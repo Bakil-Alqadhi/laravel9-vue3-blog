@@ -39,7 +39,7 @@
         <main class="container">
         <!-- render components depending on the page visited -->
 
-        <router-view @updateSidebar="update_sidebar"></router-view>
+        <router-view @updateSidebar="update_sidebar" :key="$route.path"></router-view>
         </main>
 
         <!-- Main footer -->
