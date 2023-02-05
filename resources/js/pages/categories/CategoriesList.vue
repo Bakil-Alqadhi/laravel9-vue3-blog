@@ -1,19 +1,29 @@
 <template>
 <div class="categories-list">
     <h1>Categories List</h1>
-    <!-- success message -->
-    <div class="success-msg" v-if="success">
+     <!-- Delete message -->
+     <div class="success-msg" v-if="deleteSuccess">
         <i class="fa fa-check"></i>
-        {{ message }}
+        Category deleted successfully
+    </div>
+    <!-- success message -->
+    <div class="success-msg" v-if="editSuccess">
+        <i class="fa fa-check"></i>
+        Category Updated successfully
+    </div>
+    <!-- success message -->
+    <div class="success-msg" v-if="createSuccess">
+        <i class="fa fa-check"></i>
+        Category Created successfully
     </div>
     <div class="item" v-for="(category, index ) in categories" :key="category.id">
         <span> {{ index+1 }}</span>
         <p>{{ category.name }}</p>
         <div>
-            <RouterLink :to="{ name: 'EditCategories', params: { id: category.id} }">Edit</RouterLink>
+            <RouterLink :to="{ name: 'EditCategories', params: { id: category.id} }" class="edit-link">Edit</RouterLink>
         </div>
 
-        <input type="button" @click="destroy(category.id)" value="Delete" />
+        <input type="button" @click="destroy(category.id)" value="Delete" class="delete-btn"/>
     </div>
     <div class="index-categories">
         <router-link :to="{ name: 'CreateCategories' }">Create Categories<span>&#8594;</span></router-link>
@@ -23,12 +33,11 @@
 
 <script>
 export default {
-    props: ['theMessage'],
+    // props: ['theMessage'],
+    props: ['editSuccess', 'deleteSuccess', 'createSuccess'],
     data() {
         return {
             categories: [],
-            success: false,
-            message: ''
         };
     },
     methods: {
@@ -43,12 +52,8 @@ export default {
             axios.delete('/api/categories/' + id)
                 .then(() => {
                     this.errors = {};
-                    this.message = 'Category Deleted Successfully'
-                    this.success = true
+                    this.$emit("showDeleteSuccess")
                     this.fetchCategories()
-                    setInterval(() => {
-                        this.success = false
-                    }, 2500);
                 })
                 .catch((error) => {
                     this.errors = error.response.data.errors;
@@ -56,14 +61,6 @@ export default {
         }
     },
     mounted() {
-        if (this.theMessage !== 'nothing') {
-            this.message = this.theMessage
-            this.success = true
-        }
-        setInterval(() => {
-
-            this.success = false
-        }, 2500);
         this.fetchCategories();
     },
 }
@@ -133,24 +130,6 @@ export default {
 .categories-list .item div,
 .categories-list .item {
     margin: 15px 8px;
-}
-
-.categories-list .item div a {
-    padding: 6px 20px;
-    background-color: #4caf50;
-    color: #fff;
-    font-size: 14px;
-    display: inline-block;
-}
-
-.categories-list .item input {
-    padding: 6px 13px;
-    background-color: red;
-    color: #fff;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    font-size: 14px;
 }
 
 .categories ul li {

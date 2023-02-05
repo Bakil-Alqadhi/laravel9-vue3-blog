@@ -60,7 +60,7 @@ const router = createRouter({
             meta: { requiresAuth: true },
         },
         {
-            path: "/categories/:theMessage",
+            path: "/categories",
             name: "CategoriesList",
             component: () => import("../pages/categories/CategoriesList.vue"),
             meta: { requiresAuth: true },
@@ -78,6 +78,20 @@ const router = createRouter({
             name: "CreatePosts",
             component: () => import("../pages/posts/CreatePosts.vue"),
             meta: { requiresAuth: true },
+        },
+        {
+            path: "/posts/dashboardPostsList",
+            name: "DashboardPostsList",
+            component: () => import("../pages/posts/DashboardPostsList.vue"),
+            meta: { requiresAuth: true },
+            props: true,
+        },
+        {
+            path: "/posts/:slug/edit",
+            name: "EditPosts",
+            component: () => import("../pages/posts/EditPosts.vue"),
+            meta: { requiresAuth: true },
+            props: true,
         },
     ],
 });

@@ -1,19 +1,33 @@
 <template>
-    <div id="wrapper">
-        <!-- sidebar -->
-        <div class="sidebar" :class="{ showOverlay : overlayVisibility }">
+<div id="wrapper">
+    <!-- sidebar -->
+    <div class="sidebar" :class="{ showOverlay : overlayVisibility }">
         <span class="closeButton" @click="hideOverlay">&times;</span>
         <p class="brand-title"><a href="">Bakil's Blog</a></p>
 
         <div class="side-links">
             <ul>
-            <li><router-link @click="hideOverlay" :to="{ name: 'Home' }">Home</router-link></li>
-            <li><router-link @click="hideOverlay" :to="{ name: 'Blog' }">Blog</router-link></li>
-            <li><router-link @click="hideOverlay" :to="{ name: 'About' }">About</router-link></li>
-            <li><router-link @click="hideOverlay" :to="{ name: 'Contact' }">Contact</router-link></li>
-            <li v-if="!loggedIn"><router-link @click="hideOverlay" :to="{ name: 'Register' }">Register</router-link></li>
-            <li v-if="!loggedIn"><router-link @click="hideOverlay" :to="{ name: 'Login' }">Login</router-link></li>
-            <li v-if="loggedIn"><router-link @click="hideOverlay"  :to="{ name: 'Dashboard' }">Dashboard</router-link></li>
+                <li>
+                    <router-link @click="hideOverlay" :to="{ name: 'Home' }">Home</router-link>
+                </li>
+                <li>
+                    <router-link @click="hideOverlay" :to="{ name: 'Blog' }">Blog</router-link>
+                </li>
+                <li>
+                    <router-link @click="hideOverlay" :to="{ name: 'About' }">About</router-link>
+                </li>
+                <li>
+                    <router-link @click="hideOverlay" :to="{ name: 'Contact' }">Contact</router-link>
+                </li>
+                <li v-if="!loggedIn">
+                    <router-link @click="hideOverlay" :to="{ name: 'Register' }">Register</router-link>
+                </li>
+                <li v-if="!loggedIn">
+                    <router-link @click="hideOverlay" :to="{ name: 'Login' }">Login</router-link>
+                </li>
+                <li v-if="loggedIn">
+                    <router-link @click="hideOverlay" :to="{ name: 'Dashboard' }">Dashboard</router-link>
+                </li>
 
             </ul>
         </div>
@@ -21,66 +35,87 @@
         <!-- sidebar footer -->
         <footer class="sidebar-footer">
             <div>
-            <a href=""><i class="fab fa-facebook-f"></i></a>
-            <a href=""><i class="fab fa-instagram"></i></a>
-            <a href=""><i class="fab fa-twitter"></i></a>
+                <a href=""><i class="fab fa-facebook-f"></i></a>
+                <a href=""><i class="fab fa-instagram"></i></a>
+                <a href=""><i class="fab fa-twitter"></i></a>
             </div>
 
             <small>&copy; 2022 Bakil's Blog</small>
         </footer>
-        </div>
-        <!-- Menu Button -->
-        <div class="menuButton" @click="showOverlay">
+    </div>
+    <!-- Menu Button -->
+    <div class="menuButton" @click="showOverlay">
         <div class="bar"></div>
         <div class="bar"></div>
         <div class="bar"></div>
-        </div>
-        <!-- main -->
-        <main class="container">
+    </div>
+    <!-- main -->
+    <main class="container">
         <!-- render components depending on the page visited -->
 
-        <router-view @updateSidebar="update_sidebar" :key="$route.path"></router-view>
-        </main>
+        <router-view @updateSidebar="update_sidebar" @createSuccess="showCreateSuccessMessage" @showEditSuccess="showEditSuccessMessage" :editSuccess="editSuccess" @showDeleteSuccess="showDeleteSuccessMessage" :deleteSuccess="deleteSuccess" :key="$route.path"></router-view>
+    </main>
 
-        <!-- Main footer -->
-        <footer class="main-footer">
+    <!-- Main footer -->
+    <footer class="main-footer">
         <div>
             <a href=""><i class="fab fa-facebook-f"></i></a>
             <a href=""><i class="fab fa-instagram"></i></a>
             <a href=""><i class="fab fa-twitter"></i></a>
         </div>
         <small>&copy; 2022 Bakil's Blog</small>
-        </footer>
-    </div>
+    </footer>
+</div>
 </template>
 
 <script>
 export default {
-    data(){
+    data() {
         return {
             overlayVisibility: false,
-            loggedIn: false
+            loggedIn: false,
+            editSuccess: false,
+            deleteSuccess: false,
+            createSuccess: false
         }
     },
     methods: {
-        showOverlay(){
+        showOverlay() {
             this.overlayVisibility = true
         },
-        hideOverlay(){
+        hideOverlay() {
             this.overlayVisibility = false
         },
-        update_sidebar(){
+        update_sidebar() {
             this.loggedIn = !this.loggedIn
+        },
+        showEditSuccessMessage() {
+            this.editSuccess = true
+            setInterval(() => {
+                this.editSuccess = false
+            }, 2500);
+        },
+        showDeleteSuccessMessage() {
+            this.deleteSuccess = true
+            setInterval(() => {
+                this.deleteSuccess = false
+            }, 2500);
+        },
+        showCreateSuccessMessage(){
+            this.createSuccess = true
+            setInterval(() => {
+                this.createSuccess = false
+            }, 2500);
         }
     },
     mounted() {
-            if(localStorage.getItem('authenticated')){
-                this.loggedIn = true
-            } else {
-                this.loggedIn = false
-                this.$emit('updateSideBar')
-            }
+        if (localStorage.getItem('authenticated')) {
+            this.loggedIn = true
+        } else {
+            this.loggedIn = false
+            this.$emit('updateSideBar')
         }
+    }
 }
 </script>
 

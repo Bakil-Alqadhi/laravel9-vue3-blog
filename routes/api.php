@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardPostController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RelatedPostController;
@@ -34,13 +35,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('categories/{category}', [CategoryController::class, 'update']);
     Route::delete('categories/{category}', [CategoryController::class, 'destroy']);
     Route::post('posts', [PostController::class, 'store']);
+    Route::get('dashboard-posts', [DashboardPostController::class, 'index']);
+    Route::get('posts/{post:slug}', [PostController::class, 'show']);
+    Route::put('posts/{post:slug}', [PostController::class, 'update']);
+    Route::delete('posts/{post:slug}', [PostController::class, 'destroy']);
 
 });
 //categories
 Route::get('categories', [CategoryController::class, 'index']);
 //posts
 Route::get('home-posts', [HomeController::class, 'index']);
-Route::get('posts/{post:slug}', [PostController::class, 'show']);
 Route::get('related-posts/{post:slug}', [RelatedPostController::class, 'index']);
 Route::get('posts', [PostController::class, 'index']);
 

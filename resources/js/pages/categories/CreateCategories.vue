@@ -34,11 +34,9 @@ export default {
                     console.log(this.fields)
                     this.fields = {};
                     this.errors = {};
+                    this.$emit("showCreatedSuccess")
                     this.$router.push({
-                        name: 'CategoriesList',
-                        params: {
-                            theMessage: 'Category created successfully'
-                        }
+                        name: 'CategoriesList'
                     })
                 })
                 .catch((error) => {

@@ -4,15 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePostRequest;
 use App\Http\Resources\PostResource;
+use App\Models\Category;
 use App\Models\Post;
+use Illuminate\Console\View\Components\Confirm;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return PostResource::collection(Post::latest()->get());
+        if($request->category){
+            return PostResource::collection(Category::where('name', $request->category)->firstOrFail()->posts()->latest()->paginate(1)->withQueryString());
+        }
+        if($request->search){
+            return PostResource::collection(Post::where('title', 'like', '%'. $request->search .'%')
+                ->orWhere('body', 'like', '%'. $request->search .'%') ->latest()->paginate(1)->withQueryString());
+        }
+        return PostResource::collection(Post::latest()->paginate(1));
     }
     public function store(StorePostRequest $request)
     {
@@ -38,6 +48,42 @@ class PostController extends Controller
     }
     public function show(Post $post)
     {
+        if(auth()->user()->id !== $post->user_id){
+            return abort(403);
+        }
         return new PostResource($post);
+    }
+    public function update(Request $request, Post $post)
+    {
+        if(auth()->user()->id !== $post->user_id){
+            return abort(403);
+        }
+        $request->validate([
+            'title' => 'required',
+            'file' => ['nullable | image'],
+            'body' => ['required'],
+            'category_id'=> 'required'
+        ]);
+
+        $title = $request->input('title');
+
+        $slug = Str::slug($title, '-') . '-' . $post->id;
+        if($request->file('file')){
+            File::delete($post->imagePath);
+            $imagePath = 'storage/' . $request->file('file')->store('postImages', 'public');
+            $post->imagePath = $imagePath;
+        }
+        $post->title = $request->title;
+        $post->slug = $slug;
+        $post->body = $request->input('body');
+        $post->category_id = $request->category_id;
+        return $post->save();
+    }
+    public function destroy(Post $post)
+    {
+        if(auth()->user()->id !== $post->user_id){
+            return abort(403);
+        }
+        return $post->delete();
     }
 }

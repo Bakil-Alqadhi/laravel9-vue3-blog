@@ -37,11 +37,9 @@ export default {
                     console.log(this.fields)
                     this.fields = {};
                     this.errors = {};
+                    this.$emit("showEditSuccess")
                     this.$router.push({
-                        name: 'CategoriesList',
-                        params: {
-                            theMessage: 'Category updated successfully'
-                        }
+                        name: 'CategoriesList'
                     })
                 })
                 .catch((error) => {
